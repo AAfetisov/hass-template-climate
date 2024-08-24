@@ -1,0 +1,29 @@
+climate:
+  - platform: climate_template
+    name: Virtual AC
+    unique_id: virtual_ac_01
+    min_temp: 17
+    max_temp: 30
+    current_temperature_template: "{{ states('sensor.universal_remote_control_temperature') }}"
+    current_humidity_template: "{{ states('sensor.universal_remote_control_humidity') }}"
+    temp_step: 1
+    set_temperature:
+      - service: remote.send_command
+        target:
+          entity_id: remote.universal_remote_control
+        data:
+          num_repeats: 1
+          delay_secs: 0.4
+          hold_secs: 0
+          device: airconCarrier
+          command: "{{ hvac_mode }} {{temperature | int}} {{ fan_mode }}"
+    set_hvac_mode:
+      - service: remote.send_command
+        target:
+          entity_id: remote.universal_remote_control
+        data:
+          num_repeats: 1
+          delay_secs: 0.4
+          hold_secs: 0
+          device: airconCarrier
+          command: "{{ hvac_mode }} {{temperature | int}} {{ fan_mode }}"
