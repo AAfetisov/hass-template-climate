@@ -735,7 +735,12 @@ class TemplateClimate(TemplateEntity, ClimateEntity, RestoreEntity):
 
         if self._set_hvac_mode_script is not None:
             await self._set_hvac_mode_script.async_run(
-                run_variables={ATTR_HVAC_MODE: hvac_mode}, context=self._context
+                run_variables={
+                    ATTR_HVAC_MODE: hvac_mode,
+                    "temperature": self._target_temp,
+                    "fan_mode": self._current_fan_mode,
+                }
+                , context=self._context
             )
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
@@ -757,7 +762,11 @@ class TemplateClimate(TemplateEntity, ClimateEntity, RestoreEntity):
 
         if self._set_fan_mode_script is not None:
             await self._set_fan_mode_script.async_run(
-                run_variables={ATTR_FAN_MODE: fan_mode}, context=self._context
+                run_variables={
+                    ATTR_FAN_MODE: fan_mode,
+                    "temperature": self._target_temp,
+                    "hvac_mode": self._current_operation,
+                }, context=self._context
             )
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
@@ -801,7 +810,8 @@ class TemplateClimate(TemplateEntity, ClimateEntity, RestoreEntity):
                     ATTR_TEMPERATURE: kwargs.get(ATTR_TEMPERATURE),
                     ATTR_TARGET_TEMP_HIGH: kwargs.get(ATTR_TARGET_TEMP_HIGH),
                     ATTR_TARGET_TEMP_LOW: kwargs.get(ATTR_TARGET_TEMP_LOW),
-                    ATTR_HVAC_MODE: kwargs.get(ATTR_HVAC_MODE),
+                    "hvac_mode": kwargs.get(ATTR_HVAC_MODE, self._current_operation),
+                    "fan_mode": kwargs.get(ATTR_FAN_MODE, self._current_fan_mode),
                 },
                 context=self._context,
             )
